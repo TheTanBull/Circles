@@ -5,22 +5,62 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Circles</title>
+    <script type="text/javascript" src="howler.min.js"></script>
     <script type="text/javascript" src="paper-full.js"></script>
     <link rel="stylesheet" type="text/css" href="circles.css"> 
     <script type="text/paperscript" canvas="myCanvas">
 
+        var keyData = {
+            a: {
+                color: "purple",
+                sound: new Howl({
+                    src: ['sounds/bubbles.mp3']
+                })
+            },
+            s: {
+                color: "green",
+                sound: new Howl({
+                    src: ['sounds/clay.mp3']
+                })
+            },
+            d: {
+                color: "yellow",
+                sound: new Howl({
+                    src: ['sounds/confetti.mp3']
+                })
+            }
+        }
+
+        var circles = [];
+
 
         function onKeyDown(event) {
-            var maxPoint = new Point(view.size.width, view.size.height);
-            var randomPoint = Point.random();
-            var point = maxPoint * randomPoint;
-            new Path.Circle(point, 10).fillColor = "orange";
+            if(keyData[event.key]){
+                var maxPoint = new Point(view.size.width, view.size.height);
+                var randomPoint = Point.random();
+                var point = maxPoint * randomPoint;
+                var newCircle = new Path.Circle(point, 500);
+                newCircle.fillColor = keyData[event.key].color;
+                keyData[event.key].sound.play();
+                circles.push(newCircle);
+            }
+        }
+
+        function onFrame(event) {
+            for(var i = 0; i < circles.length; i++){
+                circles[i].fillColor.hue += 1;
+                circles[i].scale(.9);
+                if(circles[i].area < 1){
+                    circles.splice(i, 1);
+                    i--;
+                    console.log(circles);
+                }
+            }
+
         }
 
 
     </script>
-            <!-- var myCircle = new Path.Circle(new Point(100, 70), 50);
-        myCircle.fillColor = 'black'; -->
 </head>
 <body>
     <canvas id="myCanvas" resize></canvas>
